@@ -17,6 +17,6 @@ def sample_dag():
 
     start = EmptyOperator(task_id='start')
     end = EmptyOperator(task_id='end')
-
     start >> task_1() >> end
+
 sample_dag()
