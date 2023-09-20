@@ -2,7 +2,6 @@ from airflow import DAG
 from pendulum import timezone
 from datetime import datetime
 from airflow.operators.empty import EmptyOperator
-from operators.subway import SubwayOperator
 
 default_args = {
     'owner': 'airflow',
@@ -18,6 +17,5 @@ with DAG(
 ) as dag:
     start = EmptyOperator(task_id='start')
     end = EmptyOperator(task_id='end')
-    subway = SubwayOperator(task_id='subway', subway_name='1호선')
 
-    start >> subway >> end
+    start >> end

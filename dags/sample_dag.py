@@ -1,6 +1,9 @@
 from airflow.decorators import dag, task
 from airflow.operators.empty import EmptyOperator
 from datetime import datetime
+
+from airflow.providers.sftp.operators.sftp import SFTPOperator
+from airflow.providers.ssh.operators.ssh import SSHOperator
 from pendulum import timezone
 
 default_args = {
@@ -14,12 +17,19 @@ def sample_dag():
     @task(task_id='task_1')
     def task_1():
         print('task_1')
-    @task(task_id='task_2')
-    def task_2():
-        import utils.logger
+
+    ssh_op = SFTPOperator(
+        task_id='ssh_op',
+        ssh_conn_id='source_ssh',
+        local_filepath='/opt/airflow/dags/sample_dag.py',
+        remote_filepath='sample_dag.py',
+        operation='put',
+        create_intermediate_dirs=True,
+    )
+
 
     start = EmptyOperator(task_id='start')
     end = EmptyOperator(task_id='end')
-    start >> task_1() >> task_2() >> end
+    start >> task_1() >> ssh_op >> end
 
 sample_dag()
