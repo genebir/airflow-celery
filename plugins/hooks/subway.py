@@ -16,3 +16,4 @@ class SubwayHook(BaseHook):
 
     def transform(self):
         df = pd.DataFrame.from_records(self.subways)
+        print(df)

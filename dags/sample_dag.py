@@ -14,9 +14,12 @@ def sample_dag():
     @task(task_id='task_1')
     def task_1():
         print('task_1')
+    @task(task_id='task_2')
+    def task_2():
+        import utils.logger
 
     start = EmptyOperator(task_id='start')
     end = EmptyOperator(task_id='end')
-    start >> task_1() >> end
+    start >> task_1() >> task_2() >> end
 
 sample_dag()
