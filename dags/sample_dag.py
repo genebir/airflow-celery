@@ -3,8 +3,7 @@ from airflow.operators.empty import EmptyOperator
 from datetime import datetime
 import os
 from airflow.utils.task_group import TaskGroup
-from airflow.providers.sftp.operators.sftp import SFTPOperator
-from airflow.providers.ssh.operators.ssh import SSHOperator
+import shutil
 from airflow.providers.google.cloud.transfers.local_to_gcs import LocalFilesystemToGCSOperator
 from pendulum import timezone
 
@@ -16,14 +15,14 @@ default_args = {
 
 @dag(default_args=default_args, schedule_interval=None, tags=['example'])
 def sample_dag():
-    @task(task_id='task_1')
-    def task_1():
-        print('task_1')
 
-
-
+    file_list = os.listdir('/opt/airflow/data')
     local_to_gcs_group = TaskGroup(group_id='LOCAL_TO_GCS_GROUP')
-    for _ in os.listdir('/opt/airflow/data'):
+    for _ in file_list:
+        if _.startswith('.'):
+            continue
+        if _.startswith('old'):
+            continue
         _task_id = _.split('.')[0].replace('(','_').replace(')','').replace(' ','_')
         LocalFilesystemToGCSOperator(
             task_id=f'local_to_gcs_{_task_id}',
@@ -32,9 +31,17 @@ def sample_dag():
             bucket='gov-source-data',
             task_group=local_to_gcs_group
         )
+    @task(task_id='move_to_old')
+    def move_to_old():
+        for _ in file_list:
+            if _.startswith('.'):
+                continue
+            if _.startswith('old'):
+                continue
+            shutil.move(f'/opt/airflow/data/{_}', f'/opt/airflow/data/old/{_}')
 
     start = EmptyOperator(task_id='start')
     end = EmptyOperator(task_id='end')
-    start >> local_to_gcs_group >> end
+    start >> local_to_gcs_group >> move_to_old() >> end
 
 sample_dag()
