@@ -13,11 +13,15 @@ default_args = {
 }
 
 def selenium_test():
-    driver = webdriver.Remote(
-        command_executor='http://172.20.0.4:4444/wd/hub',
-    )
-    driver.get('http://www.google.com')
-    print(driver.title)
+    with webdriver.Remote('http://172.20.0.4:4444/wd/hub') as driver:
+        driver.get('http://www.naver.com')
+        print('>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>')
+        print(driver)
+        print('<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<')
+        print(driver.title)
+        print('>>>>>>>>>>>>>>>>>>>>>', driver.title)
+        driver.quit()
+        pass
 
 
 with DAG(
