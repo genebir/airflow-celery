@@ -14,7 +14,7 @@ default_args = {
 
 def make_df(**context):
     ti = context['ti']
-    df = pd.DataFrame(ti.xcom_pull(task_ids='api'))
+    df = pd.DataFrame.from_records(ti.xcom_pull(task_ids='api')['row'])
     print(df)
 
 
@@ -31,9 +31,9 @@ with DAG(
                       start_index=1,
                       end_index=1000,
                       key='rentBikeStatus',)
-    df = PythonOperator(task_id='df',
+    mk_df = PythonOperator(task_id='df',
                         python_callable=make_df,
                         provide_context=True)
 
 
-    start >> api >> df >> end
+    start >> api >> mk_df >> end
