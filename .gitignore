@@ -1,3 +1,4 @@
 *.log
 *.cfg
 /.ssh/
+/plugins/utils/api.py

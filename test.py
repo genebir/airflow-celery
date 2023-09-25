@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import StaleElementReferenceException
 from selenium.webdriver.support.wait import WebDriverWait
-from plugins.utils.api import Api
+from plugins.utils.api import DefaultApi
 import pandas as pd
 
 # def get_url():
@@ -33,7 +33,7 @@ import pandas as pd
 # print(get_url())
 
 def get_url(segment: str) -> dict:
-    url = Api.BASE_URL.value + Api.POPULAR_URL.value
+    url = DefaultApi.BASE_URL.value + DefaultApi.POPULAR_URL.value
 
     options = webdriver.ChromeOptions()
     options.add_argument('--no-sandbox')
