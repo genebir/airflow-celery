@@ -73,7 +73,7 @@ x-airflow-common:
     AIRFLOW__SCHEDULER__ENABLE_HEALTH_CHECK: 'true'
     # WARNING: Use _PIP_ADDITIONAL_REQUIREMENTS option ONLY for a quick checks
     # for other purpose (development, test and especially production usage) build/extend Airflow image.
-    _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:- selenium==4.1.0 pyarrow==10.0.1}
+    _PIP_ADDITIONAL_REQUIREMENTS: ${_PIP_ADDITIONAL_REQUIREMENTS:-}
   volumes:
     - ${AIRFLOW_PROJ_DIR:-.}/dags:/opt/airflow/dags
     - ${AIRFLOW_PROJ_DIR:-.}/logs:/opt/airflow/logs
@@ -91,6 +91,8 @@ x-airflow-common:
       condition: service_healthy
   env_file:
     - .env
+  extra_hosts:
+    - "host.docker.internal:host-gateway"
 
 services:
   postgres:
@@ -302,12 +304,6 @@ services:
       <<: *airflow-common-depends-on
       airflow-init:
         condition: service_completed_successfully
-  selenium:
-    container_name: remote_chromedriver
-    image: seleniarm/standalone-chromium:4.10
-    ports:
-      - 4444:4444
-    restart: always
 
 volumes:
   postgres-db-volume:

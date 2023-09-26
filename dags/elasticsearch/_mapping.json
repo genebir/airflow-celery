@@ -1,7 +1,51 @@
 {
-  "mappings": {
-    "properties": {
-      
+  "CycleRentUseMonth": {
+    "settings": {
+      "number_of_shards": 5,
+      "number_of_replicas": 1
+    },
+    "mappings": {
+      "properties": {
+        "base_ym": {
+            "type": "date",
+            "format": "yyyyMM"
+        },
+        "rent_type": {
+          "type": "keyword"
+        },
+        "rent_no": {
+          "type": "text"
+        },
+        "rent_name": {
+          "type": "text",
+          "fields": {
+            "keyword": {
+              "type": "keyword"
+            }
+          }
+        },
+        "gender": {
+          "type": "keyword"
+        },
+        "age": {
+          "type": "text"
+        },
+        "rent_cnt": {
+          "type": "integer"
+        },
+        "exer_amt": {
+          "type": "integer"
+        },
+        "carbon_amt": {
+          "type": "half_float"
+        },
+        "mv_meter": {
+          "type": "half_float"
+        },
+        "mv_time": {
+          "type": "integer"
+        }
+      }
     }
   }
 }

@@ -2,7 +2,6 @@ from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 from airflow.operators.python import PythonOperator
 from datetime import datetime
-import sqlalchemy
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from dateutil.relativedelta import relativedelta
@@ -16,7 +15,7 @@ default_args = {
     'start_date': datetime(2023, 1, 1, tzinfo=timezone('Asia/Seoul')),
 }
 
-def make_df(engine: sqlalchemy.engine,
+def make_df(hook: PostgresHook,
             **context):
     ti = context['ti']
     df = pd.DataFrame.from_records(ti.xcom_pull(task_ids='api')['row'])
@@ -31,9 +30,11 @@ def make_df(engine: sqlalchemy.engine,
             'MOVE_METER',
             'MOVE_TIME']
 
+
+
     df.to_sql(
         name='pblc_cyc_mthly_usg',
-        con=engine,
+        con=hook.get_sqlalchemy_engine(),
         index=False,
         if_exists='append'
     )
